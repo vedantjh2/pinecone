@@ -28,7 +28,7 @@ def query(query_vectors, index, k=100):
         end = time.perf_counter()
         results.append(res)
         times.append(end-start)
-        if i%1000: print("batch done", i)
+        if i%1000==0: print("batch done", i)
     return [times, results]
 
 def formatResults(results):
