@@ -72,7 +72,7 @@ def main():
 	index = pc.Index("glove100d-aws")
 	print("created index")
 	print("making datatset")
-	print(glove100_dataset.documents)
+	print(glove100_dataset)
 	dataset = glove100_dataset.documents
 	print("made dataset")
 	upload_latency = upload_data(dataset, index)
