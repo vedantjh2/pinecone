@@ -74,7 +74,7 @@ def main():
 	print("making datatset")
 	dataset = glove100_dataset.documents
 	print("made dataset")
-	upload_latency = upload_data(dataset, index)
+	# upload_latency = upload_data(dataset, index)
 	query_vectors = [item.tolist() for item in glove100_dataset.queries["vector"]]
 	# query_results = glove100_dataset.queries["blob"]
 	times, results = query(query_vectors, index, 100)
