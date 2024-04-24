@@ -54,7 +54,7 @@ def formatResults(results):
 
 def main():
 	glove100_dataset = load_dataset("ANN_GloVe_d100_angular")
-	print("strating pinecone")
+	print("starting pinecone")
 	pc = Pinecone(api_key=PINECONE_API_KEY)
 	pc.delete_index("glove100d-aws")
 	pc.create_index(
@@ -71,6 +71,8 @@ def main():
 
 	index = pc.Index("glove100d-aws")
 	print("created index")
+	print("making datatset")
+	print(glove100_dataset.documents)
 	dataset = glove100_dataset.documents
 	print("made dataset")
 	upload_latency = upload_data(dataset, index)
