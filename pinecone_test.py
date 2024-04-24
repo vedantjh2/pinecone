@@ -28,7 +28,7 @@ def query(query_vectors, index, k=100):
         end = time.perf_counter()
         results.append(res)
         times.append(end-start)
-        print("batch done", i)
+        if i%1000: print("batch done", i)
     return [times, results]
 
 def formatResults(results):
@@ -56,36 +56,35 @@ def main():
 	glove100_dataset = load_dataset("ANN_GloVe_d100_angular")
 	print("starting pinecone")
 	pc = Pinecone(api_key=PINECONE_API_KEY)
-	pc.delete_index("glove100d-aws")
-	pc.create_index(
-		name="glove100d-aws",
-		dimension=100,
-		metric="cosine",
-		# change later, serverless only available on AWS 
-		# trying to start with some boilerplate code rn git commit -am ""
-		spec=ServerlessSpec(
-			cloud='aws', 
-			region='us-east-1'
-		) 
-	) 
+	# pc.delete_index("glove100d-aws")
+	# pc.create_index(
+	# 	name="glove100d-aws",
+	# 	dimension=100,
+	# 	metric="cosine",
+	# 	# change later, serverless only available on AWS 
+	# 	# trying to start with some boilerplate code rn git commit -am ""
+	# 	spec=ServerlessSpec(
+	# 		cloud='aws', 
+	# 		region='us-east-1'
+	# 	) 
+	# ) 
 
 	index = pc.Index("glove100d-aws")
 	print("created index")
 	print("making datatset")
-	print(glove100_dataset)
 	dataset = glove100_dataset.documents
 	print("made dataset")
 	upload_latency = upload_data(dataset, index)
 	query_vectors = [item.tolist() for item in glove100_dataset.queries["vector"]]
-	nn = glove100_dataset.queries["blob"][0]["nearest_neighbors"]
 	# query_results = glove100_dataset.queries["blob"]
-	times, results = query(query_vectors, index, 10)
+	times, results = query(query_vectors, index, 100)
 	print("Mean query latency",np.mean(times))
-	formatted_results = formatResults(results)
+	nn = glove100_dataset.queries["blob"][0]["nearest_neighbors"]
+	# formatted_results = formatResults(results)
 	nn100 = []
-	for x in glove100_dataset.queries["blob"]: 
-		s = set(x["nearest_neighbors"])
-		nn100.append(s)
+	# for x in glove100_dataset.queries["blob"]: 
+	# 	s = set(x["nearest_neighbors"])
+	# 	nn100.append(s)
 
 if __name__ == "__main__":
     main()
