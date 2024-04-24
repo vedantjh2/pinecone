@@ -1,0 +1,12 @@
+elasticsearch==8.12.1
+elasticsearch-dsl==8.12.0
+typer==0.9.0
+fabric==3.2.2
+requests==2.31.0
+h5py==3.10.0
+numpy==1.26.4
+seaborn==0.13.2
+pinecone-client==3.1.0
+pinecone-datasets==0.7.0
+pyyaml==6.0.1
+pandas
