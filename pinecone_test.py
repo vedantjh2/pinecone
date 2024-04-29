@@ -56,18 +56,18 @@ def main():
 	glove100_dataset = load_dataset("ANN_GloVe_d100_angular")
 	print("starting pinecone")
 	pc = Pinecone(api_key=PINECONE_API_KEY)
-	pc.delete_index("glove100d-aws")
-	pc.create_index(
-		name="glove100d-aws",
-		dimension=100,
-		metric="cosine",
-		# change later, serverless only available on AWS 
-		# trying to start with some boilerplate code rn git commit -am ""
-		spec=ServerlessSpec(
-			cloud='aws', 
-			region='us-east-1'
-		) 
-	) 
+	# pc.delete_index("glove100d-aws")
+	# pc.create_index(
+	# 	name="glove100d-aws",
+	# 	dimension=100,
+	# 	metric="cosine",
+	# 	# change later, serverless only available on AWS 
+	# 	# trying to start with some boilerplate code rn git commit -am ""
+	# 	spec=ServerlessSpec(
+	# 		cloud='aws', 
+	# 		region='us-east-1'
+	# 	) 
+	# ) 
 
 	index = pc.Index("glove100d-aws")
 	print("created index")
@@ -76,10 +76,10 @@ def main():
 	print("made dataset")
 	dl = len(dataset)
 	partition_len = int(dl*0.9)
-	df_1 = dataset.iloc[:partition_len,:]
-	df_2 = dataset.iloc[partition_len:,:]
-	upload_latency = upload_data(df_1, index)
-	upload_latency = upload_data(df_2, index)
+	# df_1 = dataset.iloc[:partition_len,:]
+	# df_2 = dataset.iloc[partition_len:,:]
+	# upload_latency = upload_data(df_1, index)
+	# upload_latency = upload_data(df_2, index)
 	query_vectors = [item.tolist() for item in glove100_dataset.queries["vector"]]
 	# query_results = glove100_dataset.queries["blob"]
 	times, results = query(query_vectors, index, 100)
@@ -91,7 +91,7 @@ def main():
 		s = set(x["nearest_neighbors"])
 		nn100.append(s)
 	recall_per_query_100 = []
-	for idx,qr in enumerate(formatted_results_k100):
+	for idx,qr in enumerate(formatted_results):
 	    true_pos = 0
 	    for res in qr:
 	        if res["id"] in nn100[idx]: true_pos+=1
