@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 BATCH_SIZE = 100
-
+PINECONE_API_KEY = "284aedd1-2870-4523-8656-9110293fce67"
 
 def upload_data(dataset, index):
     print(f"\n Uploading Data...")
@@ -56,35 +56,45 @@ def main():
 	glove100_dataset = load_dataset("ANN_GloVe_d100_angular")
 	print("starting pinecone")
 	pc = Pinecone(api_key=PINECONE_API_KEY)
-	# pc.delete_index("glove100d-aws")
-	# pc.create_index(
-	# 	name="glove100d-aws",
-	# 	dimension=100,
-	# 	metric="cosine",
-	# 	# change later, serverless only available on AWS 
-	# 	# trying to start with some boilerplate code rn git commit -am ""
-	# 	spec=ServerlessSpec(
-	# 		cloud='aws', 
-	# 		region='us-east-1'
-	# 	) 
-	# ) 
+	pc.delete_index("glove100d-aws")
+	pc.create_index(
+		name="glove100d-aws",
+		dimension=100,
+		metric="cosine",
+		# change later, serverless only available on AWS 
+		# trying to start with some boilerplate code rn git commit -am ""
+		spec=ServerlessSpec(
+			cloud='aws', 
+			region='us-east-1'
+		) 
+	) 
 
 	index = pc.Index("glove100d-aws")
 	print("created index")
 	print("making datatset")
 	dataset = glove100_dataset.documents
 	print("made dataset")
-	# upload_latency = upload_data(dataset, index)
+	dl = len(dataset)
+	df_1 = dataset.iloc[:dl*0.9,:]
+	df_2 = dataset.iloc[dl*0.9:,:]
+	upload_latency = upload_data(df_1, index)
+	upload_latency = upload_data(df_2, index)
 	query_vectors = [item.tolist() for item in glove100_dataset.queries["vector"]]
 	# query_results = glove100_dataset.queries["blob"]
 	times, results = query(query_vectors, index, 100)
 	print("Mean query latency",np.mean(times))
 	nn = glove100_dataset.queries["blob"][0]["nearest_neighbors"]
-	# formatted_results = formatResults(results)
+	formatted_results = formatResults(results)
 	nn100 = []
-	# for x in glove100_dataset.queries["blob"]: 
-	# 	s = set(x["nearest_neighbors"])
-	# 	nn100.append(s)
+	for x in glove100_dataset.queries["blob"]: 
+		s = set(x["nearest_neighbors"])
+		nn100.append(s)
+	recall_per_query_100 = []
+	for idx,qr in enumerate(formatted_results_k100):
+	    true_pos = 0
+	    for res in qr:
+	        if res["id"] in nn100[idx]: true_pos+=1
+	    recall_per_query_100.append(true_pos/100)
 
 if __name__ == "__main__":
     main()
