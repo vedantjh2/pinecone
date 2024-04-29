@@ -95,6 +95,7 @@ def main():
 	    for res in qr:
 	        if res["id"] in nn100[idx]: true_pos+=1
 	    recall_per_query_100.append(true_pos/100)
+	print("Avg recall: ", np.mean(recall_per_query_100))
 
 if __name__ == "__main__":
     main()
