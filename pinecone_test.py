@@ -75,8 +75,9 @@ def main():
 	dataset = glove100_dataset.documents
 	print("made dataset")
 	dl = len(dataset)
-	df_1 = dataset.iloc[:dl*0.9,:]
-	df_2 = dataset.iloc[dl*0.9:,:]
+	partition_len = int(dl*0.9)
+	df_1 = dataset.iloc[:partition_len,:]
+	df_2 = dataset.iloc[partition_len:,:]
 	upload_latency = upload_data(df_1, index)
 	upload_latency = upload_data(df_2, index)
 	query_vectors = [item.tolist() for item in glove100_dataset.queries["vector"]]
